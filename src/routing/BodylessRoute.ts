@@ -1,7 +1,12 @@
 import { MethodBodyless } from "../types/Methods";
 import HTTPHeaders from "../types/HTTPHeaders";
+import GenericRoute from "./GenericRoute";
 
-export class BodylessRoute {
+export class BodylessRoute implements GenericRoute {
+    unity(): string {
+        return `${this.method} ${this.url.href}`
+    }
+
     path: string
     base: URL
     url: URL

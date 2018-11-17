@@ -1,5 +1,5 @@
 import * as fetch from 'node-fetch';
-import LEONAPIProvider from "./LEONAPIProvider";
+import LEONAPIProvider, { LEONAPIError } from "./LEONAPIProvider";
 import { BodylessRoute } from '../routing/BodylessRoute';
 
 export class LEONAPIDefaultProvider implements LEONAPIProvider {
@@ -16,6 +16,6 @@ export class LEONAPIDefaultProvider implements LEONAPIProvider {
             headers: {
                 ...route.headers
             }
-        })
+        }).catch(err => { throw new LEONAPIError.NetworkingError(err) })
     }
 }
