@@ -2,7 +2,7 @@ import BodyPayload from "./BodyPayload";
 import HTTPHeaders from "./HTTPHeaders";
 
 export interface RequestBody {
-    payload(): BodyPayload
+    payload(): BodyPayload|undefined
 
-    headers(): HTTPHeaders
+    headers(): HTTPHeaders|undefined
 }
