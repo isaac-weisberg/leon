@@ -1,17 +1,21 @@
 import * as fetch from 'node-fetch';
 import LEONAPIProvider from "./LEONAPIProvider";
-import { MethodBodyless } from "../types/Methods";
-import HTTPHeaders from '../types/HTTPHeaders';
+import { BodylessRoute } from '../routing/BodylessRoute';
 
 export class LEONAPIDefaultProvider implements LEONAPIProvider {
-    async requestBodyless(url: URL, method: MethodBodyless, searchParams: URLSearchParams, headers: HTTPHeaders|undefined): Promise<fetch.Response> {
-        searchParams.forEach((value, name) => {
-            url.searchParams.append(name, value)
-        })
+    async requestBodyless(route: BodylessRoute): Promise<fetch.Response> {
+        const url = route.url
+        if (route.query) {
+            route.query.forEach((value, name) => {
+                url.searchParams.append(name, value)
+            })
+        } 
 
         return fetch(url.href, {
-            method: method,
-            headers: headers
+            method: route.method,
+            headers: {
+                ...route.headers
+            }
         })
     }
 }
