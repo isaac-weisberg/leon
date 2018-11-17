@@ -1,8 +1,13 @@
+import { Response } from 'node-fetch'
 import { MethodBodyless } from "../types/Methods";
 import HTTPHeaders from "../types/HTTPHeaders";
 import GenericRoute from "./GenericRoute";
 
 export class BodylessRoute implements GenericRoute {
+    async validate(response: Response): Promise<{ valid: boolean; }> {
+        return { valid: false }
+    }
+
     unity(): string {
         return `${this.method} ${this.url.href}`
     }
