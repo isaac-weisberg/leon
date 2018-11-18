@@ -5,7 +5,7 @@
   "main": "index.js",
   "types": "index.d.ts",
   "scripts": {
-    "start": "ts-node ./src/index.ts",
+    "start": "ts-node ./src/index.ts > latestrep.json",
     "build": "npx tsc && npm pack",
     "clean": "rm -rf *.tgz ./src/**/*.d.ts ./src/**/*.js"
   },
