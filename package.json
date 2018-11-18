@@ -7,7 +7,7 @@
   "scripts": {
     "start": "ts-node ./src/index.ts",
     "build": "npx tsc && npm pack",
-    "clean": "rm -rf *.tgz ./src/*.d.ts ./src/*.js"
+    "clean": "rm -rf *.tgz ./src/**/*.d.ts ./src/**/*.js"
   },
   "files": [
     "src/**/*.d.ts",
