@@ -1,61 +1,42 @@
 import View from "../view/View";
+import * as fetch from 'node-fetch'
 import LEONAPIProvider from "../api/LEONAPIProvider";
 import { LEONAPIDefaultProvider } from "../api/LEONAPIDefaultProvider";
 import { BodylessRoute } from "../routing/BodylessRoute";
 import Unity from "../util/Unity";
 import GenericRoute from "../routing/GenericRoute";
 
+export interface HarassmentResult {
+
+}
+
+const provider: LEONAPIProvider = new LEONAPIDefaultProvider()
 
 export default async function(view: View) {
     const base = view.base
-
-    const provider: LEONAPIProvider = new LEONAPIDefaultProvider()
     
-    const responsePromises = view.bodyless
+    const bodylessRoutes = view.bodyless
         .map(bodyless => 
             new BodylessRoute(bodyless.path, bodyless.method, bodyless.query, base, bodyless.headers || {})
         )
-        .map(route =>
-            provider.requestBodyless(route)
-                .catch(err => {
-                    throw new HarasserError.NetworkingProvider(err, route)
-                })
-                .then(response => ({
-                    response: response,
-                    route: route
-                }))
-        )
 
-    for (const promise of responsePromises) {
-        const { response, route } = await promise
-        const validationResult = await route.validate(response)
-        
-    }
+    return await Promise.all(bodylessRoutes.map(route => harassBodyless(route)))
+}
 
-    return (await Promise.all(
-        view.bodyless
-            .map(bodyless => 
-                new BodylessRoute(bodyless.path, bodyless.method, bodyless.query, base, bodyless.headers || {})
-            )
-            .map(route =>
-                provider.requestBodyless(route)
-                    .catch(err => {
-                        throw new HarasserError.NetworkingProvider(err, route)
-                    })
-                    .then(response => ({
-                        response: response,
-                        route: route
-                    }))
-            )
-    )).map(({ response, route }) => {
-        route.validate(response)
-            .catch(err => { throw new HarasserError.ValidationProcess(err) })
-            .then(result => ({
-                response: response,
-                route: route,
-                result: result
-            }))
-    })
+async function harassBodyless(route: BodylessRoute): Promise<Unity[]> {
+    let response: fetch.Response
+    try {
+        response = await provider.requestBodyless(route)
+    } catch(error) { return [ new HarasserError.NetworkingProvider(error, route) ] }
+
+    let rawObject: {}
+    try {
+        rawObject = await response.json()
+    } catch(error) { return [ new HarasserError.JSONParsing(error) ] }
+
+
+
+    return []
 }
 
 export namespace HarasserError {
@@ -80,16 +61,16 @@ export namespace HarasserError {
         }
     }
 
-    export class ValidationProcess extends Error {
+    export class JSONParsing extends Error {
+        error: any
+
+        unity(): string {
+            return `JSON parsing error`
+        }
+        
         constructor(error: any) {
             super()
             this.error = error
-        }
-
-        error: any
-
-        unity() {
-            return `FUCK: Harassment Route Validation Process has crashed because\n${ this.error }\n`
         }
     }
 }
