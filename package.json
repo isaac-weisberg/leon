@@ -2,9 +2,10 @@
   "name": "leon",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
-    "start": "ts-node ./src/index.ts"
+    "build": "npx tsc"
   },
   "keywords": [],
   "author": "",
