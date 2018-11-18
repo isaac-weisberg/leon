@@ -1,6 +1,7 @@
 import { MethodBodyless } from "../types/Methods";
 import HTTPHeaders from "../types/HTTPHeaders";
 import GenericRoute from "./GenericRoute";
+import { Runtype } from "runtypes";
 
 export class BodylessRoute implements GenericRoute {
     unity(): string {
@@ -13,13 +14,15 @@ export class BodylessRoute implements GenericRoute {
     method: MethodBodyless
     query?: URLSearchParams
     headers: HTTPHeaders
+    response: Runtype
 
-    constructor(path: string, method: MethodBodyless, query: URLSearchParams|undefined, base: URL, headers: HTTPHeaders) {
+    constructor(path: string, method: MethodBodyless, query: URLSearchParams|undefined, base: URL, headers: HTTPHeaders, response: Runtype) {
         this.path = path
         this.base = base
         this.url = new URL(path, base)
         this.method = method
         this.headers = headers
         this.query = query
+        this.response = response
     }
 }

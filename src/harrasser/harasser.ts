@@ -6,10 +6,6 @@ import { BodylessRoute } from "../routing/BodylessRoute";
 import Unity from "../util/Unity";
 import GenericRoute from "../routing/GenericRoute";
 
-export interface HarassmentResult {
-
-}
-
 const provider: LEONAPIProvider = new LEONAPIDefaultProvider()
 
 export default async function(view: View) {
@@ -17,26 +13,28 @@ export default async function(view: View) {
     
     const bodylessRoutes = view.bodyless
         .map(bodyless => 
-            new BodylessRoute(bodyless.path, bodyless.method, bodyless.query, base, bodyless.headers || {})
+            new BodylessRoute(bodyless.path, bodyless.method, bodyless.query, base, bodyless.headers || {}, bodyless.response)
         )
 
     return await Promise.all(bodylessRoutes.map(route => harassBodyless(route)))
 }
 
-async function harassBodyless(route: BodylessRoute): Promise<Unity[]> {
+async function harassBodyless(route: BodylessRoute): Promise<{ route: BodylessRoute, errors: Unity[] }> {
     let response: fetch.Response
     try {
         response = await provider.requestBodyless(route)
-    } catch(error) { return [ new HarasserError.NetworkingProvider(error, route) ] }
+    } catch(error) { return { route: route, errors: [ new HarasserError.NetworkingProvider(error, route) ] } }
 
     let rawObject: {}
     try {
         rawObject = await response.json()
-    } catch(error) { return [ new HarasserError.JSONParsing(error) ] }
+    } catch(error) { return { route: route, errors: [ new HarasserError.JSONParsing(error) ] } }
 
+    try {
+        route.response.check(rawObject)
+    } catch(error) { return { route: route, errors: [ new HarasserError.Validation(error) ] } }
 
-
-    return []
+    return { route: route, errors: []}
 }
 
 export namespace HarasserError {
@@ -68,6 +66,15 @@ export namespace HarasserError {
             return `JSON parsing error`
         }
         
+        constructor(error: any) {
+            super()
+            this.error = error
+        }
+    }
+
+    export class Validation extends Error {
+        error: any
+
         constructor(error: any) {
             super()
             this.error = error

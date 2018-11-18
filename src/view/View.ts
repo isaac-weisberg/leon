@@ -1,5 +1,6 @@
 import { MethodBodyless } from "../types/Methods";
 import HTTPHeaders from "../types/HTTPHeaders";
+import { Runtype } from "runtypes";
 
 export default interface View {
     base: URL,
@@ -7,6 +8,7 @@ export default interface View {
         method: MethodBodyless,
         path: string,
         query?: URLSearchParams,
-        headers?: HTTPHeaders 
+        headers?: HTTPHeaders,
+        response: Runtype
     }[]
 }
