@@ -13,7 +13,7 @@ export interface HarrassmentResults {
     bodyless: BodylessHarrasmentResults[]
 }
 
-export default async function(view: View): Promise<HarrassmentResults> {
+export default async function harasser(view: View): Promise<HarrassmentResults> {
     const base = view.base
     
     const bodylessRoutes = view.bodyless

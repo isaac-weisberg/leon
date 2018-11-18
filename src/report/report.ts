@@ -1,6 +1,6 @@
 import { HarrassmentResults } from "../harrasser/harasser";
 
-export async function report(results: HarrassmentResults) {
+export default async function report(results: HarrassmentResults) {
     return JSON.stringify(
         {
             base: results.base,
