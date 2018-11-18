@@ -8,7 +8,12 @@ import GenericRoute from "../routing/GenericRoute";
 
 const provider: LEONAPIProvider = new LEONAPIDefaultProvider()
 
-export default async function(view: View) {
+export interface HarrassmentResults {
+    base: URL
+    bodyless: BodylessHarrasmentResults[]
+}
+
+export default async function(view: View): Promise<HarrassmentResults> {
     const base = view.base
     
     const bodylessRoutes = view.bodyless
@@ -16,10 +21,18 @@ export default async function(view: View) {
             new BodylessRoute(bodyless.path, bodyless.method, bodyless.query, base, bodyless.headers || {}, bodyless.response)
         )
 
-    return await Promise.all(bodylessRoutes.map(route => harassBodyless(route)))
+    return {
+        base: base,
+        bodyless: await Promise.all(bodylessRoutes.map(route => harassBodyless(route)))
+    }
 }
 
-async function harassBodyless(route: BodylessRoute): Promise<{ route: BodylessRoute, errors: Unity[] }> {
+export interface BodylessHarrasmentResults {
+    route: BodylessRoute
+    errors: Unity[]
+}
+
+async function harassBodyless(route: BodylessRoute): Promise<BodylessHarrasmentResults> {
     let response: fetch.Response
     try {
         response = await provider.requestBodyless(route)
